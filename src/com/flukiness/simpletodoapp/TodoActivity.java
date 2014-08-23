@@ -74,6 +74,11 @@ public class TodoActivity extends Activity {
     	i.putExtra("itemPosition", itemPosition);
     	startActivityForResult(i, EDIT_REQUEST_CODE);
     }
+    
+    public void removeTodoItem(int itemPosition) {
+    	items.remove(itemPosition);
+		itemsAdapter.notifyDataSetChanged();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -96,14 +101,12 @@ public class TodoActivity extends Activity {
     	lvItems.setOnItemLongClickListener(new OnItemLongClickListener() {
     		@Override
     		public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long rowId) {
-    			items.remove(position);
-    			itemsAdapter.notifyDataSetChanged();
+    			removeTodoItem(position);
     			return true;
     		}
     	});
     	
     	lvItems.setOnItemClickListener(new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				editTodoItem(position);
