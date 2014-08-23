@@ -83,6 +83,7 @@ public class TodoActivity extends Activity {
     public void removeTodoItem(int itemPosition) {
     	items.remove(itemPosition);
 		itemsAdapter.notifyDataSetChanged();
+		saveItems();
     }
 
     @Override
