@@ -63,9 +63,14 @@ public class TodoActivity extends Activity {
     }
     
     public void addTodoItem(View v) {
-    	itemsAdapter.add(etNewItem.getText().toString());
+    	String text = etNewItem.getText().toString();
+    	// Only add non-empty items
+    	if (!text.trim().isEmpty()) {    	
+    		itemsAdapter.add(text);
+        	saveItems();
+    	}
+    	
     	etNewItem.setText("");
-    	saveItems();
     }
     
     public void editTodoItem(int itemPosition) {
