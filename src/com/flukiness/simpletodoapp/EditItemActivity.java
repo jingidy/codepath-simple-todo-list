@@ -21,6 +21,7 @@ public class EditItemActivity extends Activity {
 		itemPosition = getIntent().getIntExtra("itemPosition", -1);
 		String itemText = getIntent().getStringExtra("itemText");
 		etEditItem.setText(itemText);
+		etEditItem.selectAll();
 	}
 
 	@Override
