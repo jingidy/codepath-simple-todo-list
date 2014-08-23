@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -19,6 +21,8 @@ import org.apache.commons.io.*;
 
 
 public class TodoActivity extends Activity {
+	private static final int EDIT_REQUEST_CODE = 0;
+	
 	ArrayList<String> items;
 	ArrayAdapter<String> itemsAdapter;
 	ListView lvItems;
@@ -64,6 +68,30 @@ public class TodoActivity extends Activity {
     	saveItems();
     }
     
+    public void editTodoItem(int itemPosition) {
+    	Intent i = new Intent(this, EditItemActivity.class);
+    	i.putExtra("itemText", items.get(itemPosition));
+    	i.putExtra("itemPosition", itemPosition);
+    	startActivityForResult(i, EDIT_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	// Finish editing the item
+    	if (requestCode == EDIT_REQUEST_CODE && resultCode == RESULT_OK) {
+    		String itemText = data.getExtras().getString("itemText");
+    		int itemPosition = data.getExtras().getInt("itemPosition");
+    		
+    		if (itemPosition == -1) {
+    			System.out.println("*** Uh oh, the index of the edited item could not be found!");
+    		} else {
+    			items.set(itemPosition, itemText);
+    			itemsAdapter.notifyDataSetChanged();
+    			saveItems();
+    		}
+    	}
+    }
+
     private void setupListViewListener() {
     	lvItems.setOnItemLongClickListener(new OnItemLongClickListener() {
     		@Override
@@ -72,6 +100,14 @@ public class TodoActivity extends Activity {
     			itemsAdapter.notifyDataSetChanged();
     			return true;
     		}
+    	});
+    	
+    	lvItems.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				editTodoItem(position);
+			}
     	});
     }
     
