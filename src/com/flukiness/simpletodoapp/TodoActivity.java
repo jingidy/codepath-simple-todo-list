@@ -1,7 +1,5 @@
 package com.flukiness.simpletodoapp;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -13,18 +11,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import org.apache.commons.io.*;
 
 
 public class TodoActivity extends Activity {
 	private static final int EDIT_REQUEST_CODE = 0;
 	
-	ArrayList<String> items;
-	ArrayAdapter<String> itemsAdapter;
+	ArrayList<TodoItem> items;
+	TodoItemAdapter itemsAdapter;
 	ListView lvItems;
 	EditText etNewItem;
 
@@ -36,7 +31,7 @@ public class TodoActivity extends Activity {
         etNewItem = (EditText) findViewById(R.id.etNewItem);
         
         readItems();
-        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new TodoItemAdapter(this, android.R.layout.simple_list_item_1, items);
         lvItems.setAdapter(itemsAdapter);
         
         setupListViewListener();
@@ -65,9 +60,10 @@ public class TodoActivity extends Activity {
     public void addTodoItem(View v) {
     	String text = etNewItem.getText().toString();
     	// Only add non-empty items
-    	if (!text.trim().isEmpty()) {    	
-    		itemsAdapter.add(text);
-        	saveItems();
+    	if (!text.trim().isEmpty()) {
+    		TodoItem item = new TodoItem(text);
+    		itemsAdapter.add(item);
+        	item.save();
     	}
     	
     	etNewItem.setText("");
@@ -75,15 +71,15 @@ public class TodoActivity extends Activity {
     
     public void editTodoItem(int itemPosition) {
     	Intent i = new Intent(this, EditItemActivity.class);
-    	i.putExtra("itemText", items.get(itemPosition));
+    	i.putExtra("itemText", items.get(itemPosition).name);
     	i.putExtra("itemPosition", itemPosition);
     	startActivityForResult(i, EDIT_REQUEST_CODE);
     }
     
     public void removeTodoItem(int itemPosition) {
-    	items.remove(itemPosition);
+    	TodoItem item = items.remove(itemPosition);
 		itemsAdapter.notifyDataSetChanged();
-		saveItems();
+		item.delete();
     }
 
     @Override
@@ -96,9 +92,10 @@ public class TodoActivity extends Activity {
     		if (itemPosition == -1) {
     			System.out.println("*** Uh oh, the index of the edited item could not be found!");
     		} else {
-    			items.set(itemPosition, itemText);
+    			TodoItem item = items.get(itemPosition);
+    			item.name = itemText;
     			itemsAdapter.notifyDataSetChanged();
-    			saveItems();
+    			item.save();
     		}
     	}
     }
@@ -121,24 +118,6 @@ public class TodoActivity extends Activity {
     }
     
     private void readItems() {
-    	File filesDir = getFilesDir();
-    	File todoFile = new File(filesDir, "todo.txt");
-    	try {
-    		items = new ArrayList<String>(FileUtils.readLines(todoFile));
-    	} catch (IOException e) {
-    		items = new ArrayList<String>();
-    		e.printStackTrace();
-    	}
-
-    }
-    
-    private void saveItems() {
-    	File filesDir = getFilesDir();
-    	File todoFile = new File(filesDir, "todo.txt");
-    	try {
-    		FileUtils.writeLines(todoFile,  items);
-    	} catch(IOException e) {
-    		e.printStackTrace();
-    	}
+    	items = new ArrayList<TodoItem>(TodoItem.getAll());
     }
 }
