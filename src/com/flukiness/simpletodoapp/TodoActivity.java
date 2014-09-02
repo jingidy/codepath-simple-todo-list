@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.flukiness.simpletodoapp.EditItemDialog.EditItemDialogListener;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentActivity;
@@ -20,8 +19,6 @@ import android.widget.ListView;
 
 
 public class TodoActivity extends FragmentActivity implements EditItemDialogListener {
-	private static final int EDIT_REQUEST_CODE = 0;
-	
 	ArrayList<TodoItem> items;
 	TodoItemAdapter itemsAdapter;
 	ListView lvItems;
@@ -90,40 +87,12 @@ public class TodoActivity extends FragmentActivity implements EditItemDialogList
     			.newInstance(getString(R.string.label_edit_item_below),
     					itemPosition, item);
     	editDialog.show(fm, "fragment_edit_item");
-    	
-//    	Intent i = new Intent(this, EditItemActivity.class);
-//    	i.putExtra("itemText", item.name);
-//    	i.putExtra("itemPosition", itemPosition);
-//    	if (item.dueDate != null) {
-//    		i.putExtra("itemDueDate", item.dueDate);
-//    	}
-//    	startActivityForResult(i, EDIT_REQUEST_CODE);
     }
     
     public void removeTodoItem(int itemPosition) {
     	TodoItem item = items.remove(itemPosition);
 		itemsAdapter.notifyDataSetChanged();
 		item.delete();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	// Finish editing the item
-    	if (requestCode == EDIT_REQUEST_CODE && resultCode == RESULT_OK) {
-    		String itemText = data.getExtras().getString("itemText");
-    		int itemPosition = data.getExtras().getInt("itemPosition");
-    		Date dueDate = (Date)data.getExtras().getSerializable("itemDueDate");
-    		
-    		if (itemPosition == -1) {
-    			System.out.println("*** Uh oh, the index of the edited item could not be found!");
-    		} else {
-    			TodoItem item = items.get(itemPosition);
-    			item.name = itemText;
-    			item.dueDate = dueDate;
-    			itemsAdapter.notifyDataSetChanged();
-    			item.save();
-    		}
-    	}
     }
 
     private void setupListViewListener() {
