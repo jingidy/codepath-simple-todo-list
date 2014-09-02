@@ -33,7 +33,8 @@
         </activity>
         <activity
             android:name=".EditItemActivity"
-            android:label="@string/title_activity_edit_item" >
+            android:label="@string/title_activity_edit_item"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

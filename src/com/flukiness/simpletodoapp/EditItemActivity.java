@@ -9,11 +9,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ToggleButton;
 
 public class EditItemActivity extends Activity {
 	EditText etEditItem;
 	Button btnSave;
+	ToggleButton tbtnDueDate;
+	DatePicker dpDueDate;
 	int itemPosition;
 
 	@Override
@@ -22,11 +26,15 @@ public class EditItemActivity extends Activity {
 		setContentView(R.layout.activity_edit_item);
 		etEditItem = (EditText) findViewById(R.id.etEditItem);
 		btnSave = (Button) findViewById(R.id.btnSave);
+		tbtnDueDate = (ToggleButton) findViewById(R.id.tbtnDueDate);
+		dpDueDate = (DatePicker) findViewById(R.id.dpDueDate);
 		
 		itemPosition = getIntent().getIntExtra("itemPosition", -1);
 		String itemText = getIntent().getStringExtra("itemText");
 		etEditItem.setText(itemText);
 		etEditItem.selectAll();
+		//TODO: fill in correct due date on/off and values.
+		updateDueDateVisibility(null);
 		
 		etEditItem.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -62,6 +70,10 @@ public class EditItemActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void updateDueDateVisibility(View v) {
+		dpDueDate.setVisibility(tbtnDueDate.isChecked() ? View.VISIBLE : View.GONE);
 	}
 	
 	public void finishEditing(View v) {
