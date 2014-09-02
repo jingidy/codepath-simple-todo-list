@@ -1,6 +1,7 @@
 package com.flukiness.simpletodoapp;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -71,8 +72,12 @@ public class TodoActivity extends Activity {
     
     public void editTodoItem(int itemPosition) {
     	Intent i = new Intent(this, EditItemActivity.class);
-    	i.putExtra("itemText", items.get(itemPosition).name);
+    	TodoItem item = items.get(itemPosition);
+    	i.putExtra("itemText", item.name);
     	i.putExtra("itemPosition", itemPosition);
+    	if (item.dueDate != null) {
+    		i.putExtra("itemDueDate", item.dueDate);
+    	}
     	startActivityForResult(i, EDIT_REQUEST_CODE);
     }
     
@@ -88,12 +93,14 @@ public class TodoActivity extends Activity {
     	if (requestCode == EDIT_REQUEST_CODE && resultCode == RESULT_OK) {
     		String itemText = data.getExtras().getString("itemText");
     		int itemPosition = data.getExtras().getInt("itemPosition");
+    		Date dueDate = (Date)data.getExtras().getSerializable("itemDueDate");
     		
     		if (itemPosition == -1) {
     			System.out.println("*** Uh oh, the index of the edited item could not be found!");
     		} else {
     			TodoItem item = items.get(itemPosition);
     			item.name = itemText;
+    			item.dueDate = dueDate;
     			itemsAdapter.notifyDataSetChanged();
     			item.save();
     		}

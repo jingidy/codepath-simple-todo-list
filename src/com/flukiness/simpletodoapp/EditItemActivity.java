@@ -1,5 +1,9 @@
 package com.flukiness.simpletodoapp;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +23,7 @@ public class EditItemActivity extends Activity {
 	ToggleButton tbtnDueDate;
 	DatePicker dpDueDate;
 	int itemPosition;
+	Date dueDate;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +38,16 @@ public class EditItemActivity extends Activity {
 		String itemText = getIntent().getStringExtra("itemText");
 		etEditItem.setText(itemText);
 		etEditItem.selectAll();
-		//TODO: fill in correct due date on/off and values.
+		dueDate = (Date)getIntent().getSerializableExtra("itemDueDate");
+		if (dueDate != null) {
+			GregorianCalendar c = new GregorianCalendar();
+			c.setTime(dueDate);
+			dpDueDate.updateDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 
+					c.get(Calendar.DATE));
+			if (!tbtnDueDate.isChecked()) {
+				tbtnDueDate.toggle();
+			}
+		}
 		updateDueDateVisibility(null);
 		
 		etEditItem.addTextChangedListener(new TextWatcher() {
@@ -78,12 +92,26 @@ public class EditItemActivity extends Activity {
 	
 	public void finishEditing(View v) {
 		Intent data = new Intent();
+		
 		boolean isEmpty = etEditItem.getText().toString().trim().isEmpty();
-		if (!isEmpty) {
-			data.putExtra("itemText", etEditItem.getText().toString());
-			data.putExtra("itemPosition", itemPosition);
+		if (isEmpty) {
+			setResult(RESULT_CANCELED);
+			finish();
+			return;
 		}
-		setResult(isEmpty ? RESULT_CANCELED : RESULT_OK, data);
+
+		data.putExtra("itemText", etEditItem.getText().toString());
+		data.putExtra("itemPosition", itemPosition);
+		if (tbtnDueDate.isChecked()) {
+			GregorianCalendar c = new GregorianCalendar(dpDueDate.getYear(), 
+					dpDueDate.getMonth(), dpDueDate.getDayOfMonth());
+			dueDate = c.getTime();
+		} else {
+			dueDate = null;
+		}
+		data.putExtra("itemDueDate", dueDate);
+
+		setResult(RESULT_OK, data);
 		finish();
 	}
 	

@@ -1,5 +1,6 @@
 package com.flukiness.simpletodoapp;
 
+import java.util.Date;
 import java.util.List;
 
 import com.activeandroid.Model;
@@ -10,6 +11,8 @@ import com.activeandroid.query.Select;
 public class TodoItem extends Model {
     @Column(name = "Name")
     public String name;
+    @Column(name = "DueDate")
+    public Date dueDate;
     
     public TodoItem() {
     	super();
