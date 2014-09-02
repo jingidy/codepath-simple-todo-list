@@ -32,7 +32,7 @@ public class TodoActivity extends Activity {
         etNewItem = (EditText) findViewById(R.id.etNewItem);
         
         readItems();
-        itemsAdapter = new TodoItemAdapter(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new TodoItemAdapter(this, items);
         lvItems.setAdapter(itemsAdapter);
         
         setupListViewListener();
