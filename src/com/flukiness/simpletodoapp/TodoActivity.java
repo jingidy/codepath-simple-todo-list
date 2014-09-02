@@ -3,9 +3,10 @@ package com.flukiness.simpletodoapp;
 import java.util.ArrayList;
 import java.util.Date;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 
-public class TodoActivity extends Activity {
+public class TodoActivity extends FragmentActivity {
 	private static final int EDIT_REQUEST_CODE = 0;
 	
 	ArrayList<TodoItem> items;
@@ -71,14 +72,21 @@ public class TodoActivity extends Activity {
     }
     
     public void editTodoItem(int itemPosition) {
-    	Intent i = new Intent(this, EditItemActivity.class);
     	TodoItem item = items.get(itemPosition);
-    	i.putExtra("itemText", item.name);
-    	i.putExtra("itemPosition", itemPosition);
-    	if (item.dueDate != null) {
-    		i.putExtra("itemDueDate", item.dueDate);
-    	}
-    	startActivityForResult(i, EDIT_REQUEST_CODE);
+
+    	FragmentManager fm = getSupportFragmentManager();
+    	EditItemDialog editDialog = EditItemDialog
+    			.newInstance(getString(R.string.label_edit_item_below),
+    					itemPosition, item);
+    	editDialog.show(fm, "fragment_edit_item");
+    	
+//    	Intent i = new Intent(this, EditItemActivity.class);
+//    	i.putExtra("itemText", item.name);
+//    	i.putExtra("itemPosition", itemPosition);
+//    	if (item.dueDate != null) {
+//    		i.putExtra("itemDueDate", item.dueDate);
+//    	}
+//    	startActivityForResult(i, EDIT_REQUEST_CODE);
     }
     
     public void removeTodoItem(int itemPosition) {
