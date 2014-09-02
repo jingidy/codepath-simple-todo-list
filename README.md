@@ -14,6 +14,10 @@ Simple To-Do List for Codepath
 
 - [x] Disallow adding empty to-do items
 - [x] Disallow editing a to-do item to become empty
+- [x] Save to-do items in SQLite
+- [x] Support due dates for each to-do item
+- [x] Style each to-do item with a custom adapter
+- [x] Use a DialogFragment for the editing UI
 
 # Walkthrough of All User Stories
 
