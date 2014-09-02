@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -28,6 +29,10 @@ public class EditItemDialog extends DialogFragment {
 	DatePicker dpDueDate;
 	int itemPosition;
 	Date dueDate;
+	
+	public interface EditItemDialogListener {
+		void onEditFinished(int itemPosition, String itemText, Date itemDueDate);
+	}
 	
 	public EditItemDialog() {
 		// Required empty constructor.
@@ -82,6 +87,13 @@ public class EditItemDialog extends DialogFragment {
 			}
 		});
 		
+		btnSave.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finishEditing(v);
+			}
+		});
+		
 		etEditItem.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -103,6 +115,27 @@ public class EditItemDialog extends DialogFragment {
 
 	public void updateDueDateVisibility(View v) {
 		dpDueDate.setVisibility(tbtnDueDate.isChecked() ? View.VISIBLE : View.GONE);
+	}
+
+	public void finishEditing(View v) {
+		boolean isEmpty = etEditItem.getText().toString().trim().isEmpty();
+		if (isEmpty) {
+			dismiss();
+			return;
+		}
+		
+		String itemText = etEditItem.getText().toString();
+		if (tbtnDueDate.isChecked()) {
+			GregorianCalendar c = new GregorianCalendar(dpDueDate.getYear(), 
+					dpDueDate.getMonth(), dpDueDate.getDayOfMonth());
+			dueDate = c.getTime();
+		} else {
+			dueDate = null;
+		}
+
+		EditItemDialogListener listener = (EditItemDialogListener)getActivity();
+		listener.onEditFinished(itemPosition,  itemText, dueDate);
+		dismiss();
 	}
 
 	private void validate() {

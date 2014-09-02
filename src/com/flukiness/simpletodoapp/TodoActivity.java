@@ -3,6 +3,8 @@ package com.flukiness.simpletodoapp;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.flukiness.simpletodoapp.EditItemDialog.EditItemDialogListener;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -17,7 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 
-public class TodoActivity extends FragmentActivity {
+public class TodoActivity extends FragmentActivity implements EditItemDialogListener {
 	private static final int EDIT_REQUEST_CODE = 0;
 	
 	ArrayList<TodoItem> items;
@@ -58,7 +60,16 @@ public class TodoActivity extends FragmentActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    
+
+	@Override
+	public void onEditFinished(int itemPosition, String itemText, Date itemDueDate) {
+		TodoItem item = items.get(itemPosition);
+		item.name = itemText;
+		item.dueDate = itemDueDate;
+		itemsAdapter.notifyDataSetChanged();
+		item.save();		
+	}
+
     public void addTodoItem(View v) {
     	String text = etNewItem.getText().toString();
     	// Only add non-empty items
@@ -135,4 +146,5 @@ public class TodoActivity extends FragmentActivity {
     private void readItems() {
     	items = new ArrayList<TodoItem>(TodoItem.getAll());
     }
+
 }
